@@ -9,6 +9,7 @@
 #include <set>
 
 std::vector<std::array<int, 4>>permutationsVector = {};
+bool flag = 1;
 int actions = 0;
 void permut(std::array<int, 4> nums, int level) {
 	if (level < 2) {
@@ -123,9 +124,13 @@ int main()
 							  0, 2, 0, 0,
 							  0, 3, 0, 0,
 							  0, 1, 0, 0 };
-	std::array<int, 4> nums{ 1,2,3,4 };
-	permut(nums, 0);
-	std::cout << actions << std::endl;
+	
+	if (flag) {
+		std::array<int, 4> nums{ 1,2,3,4 };
+		permut(nums, 0);
+		std::cout << actions << std::endl;
+		flag = 0;
+	}
 
 	std::array<std::array<int, 4>, 4> myArray;
 	for (int i = 0; i < 4; i++) {
