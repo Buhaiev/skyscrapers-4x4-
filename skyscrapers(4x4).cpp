@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <array>
+#include <set>
 
 std::vector<std::array<int, 4>>permutationsVector = {};
 int actions = 0;
@@ -42,7 +43,7 @@ void permut(std::array<int, 4> nums, int level) {
 	}
 }
 
-bool lineChecker(std::array<int,4> arr, int clue) {
+bool lineChecker(std::array<int, 4> arr, int clue) {
 	int ans = 1;
 	int max = arr[0];
 	for (int i = 1; i < 4; i++) {
@@ -58,7 +59,7 @@ bool lineChecker(std::array<int,4> arr, int clue) {
 	return ans == clue;
 }
 
-bool isCorrect(int pos, int clue, std::array<std::array<int, 4>,4> items) {
+bool isCorrect(int pos, int clue, std::array<std::array<int, 4>, 4> items) {
 	std::array<int, 4> arr;
 	if (pos < 4) {
 		for (int i = 0; i < 4; i++) {
@@ -89,7 +90,7 @@ bool isCorrect(int pos, int clue, std::array<std::array<int, 4>,4> items) {
 	return lineChecker(arr, clue);
 }
 
-bool checkAll(int* clues, std::array<std::array<int, 4>,4> items) {
+bool checkAll(int* clues, std::array<std::array<int, 4>, 4> items) {
 	for (int i = 0; i < 16; i++) {
 		actions++;
 		if (clues[i] == 0) continue;
@@ -103,7 +104,7 @@ bool checkAll(int* clues, std::array<std::array<int, 4>,4> items) {
 bool checkForUsability(std::array<std::array<int, 4>, 4> arr, int level) {
 	for (int i = 0; i < 4; i++) {
 
-		for (int j = 0; j < level-1; j++) {
+		for (int j = 0; j < level - 1; j++) {
 			for (int k = j + 1; k < level; k++) {
 				//actions++;
 				if (arr[j][i] == arr[k][i]) {
@@ -122,7 +123,7 @@ int main()
 							  0, 2, 0, 0,
 							  0, 3, 0, 0,
 							  0, 1, 0, 0 };
-	std::array<int,4> nums { 1,2,3,4 };
+	std::array<int, 4> nums{ 1,2,3,4 };
 	permut(nums, 0);
 	std::cout << actions << std::endl;
 
@@ -131,36 +132,87 @@ int main()
 		myArray[i] = permutationsVector[0];
 	}
 
-	for (int a = 0; a < permutationsVector.size(); a++) {
-		actions++;
-		myArray[0] = permutationsVector[a];
-		for (int b = 0; b < permutationsVector.size(); b++) {
-			//actions++;
-			myArray[1] = permutationsVector[b];
-			if (!checkForUsability(myArray, 2)) continue;
-			for (int c = 0; c < permutationsVector.size(); c++) {
-				//actions++;
-				myArray[2] = permutationsVector[c];
-				if (!checkForUsability(myArray, 3)) continue;
-				for (int d = 0; d < permutationsVector.size(); d++) {
-					//actions++;
-					myArray[3] = permutationsVector[d];
-					if (checkForUsability(myArray,4)) {
-						if (checkAll(clues, myArray)) {
-							int** ans = new int*[4];
-							for (int i = 0; i < 4; i++) {
-								ans[i] = new int[4];
-								for (int j = 0; j < 4; j++) {
-									ans[i][j] = myArray[i][j];
-									std::cout << ans[i][j] << " ";
-								}
-								std::cout << std::endl;
-							}
-						}
+	std::array<std::set<int>, 4>present;
 
+	for (int a = 0; a < permutationsVector.size(); a++) {
+		myArray[0] = permutationsVector[a];
+		for (int i = 0; i < 4; i++) {
+			present[i].insert(myArray[0][i]);
+		}
+		for (int b = 0; b < permutationsVector.size(); b++) {
+			myArray[1] = permutationsVector[b];
+			if (present[0].count(myArray[1][0]) != 0) continue;
+			if (present[1].count(myArray[1][1]) != 0) continue;
+			if (present[2].count(myArray[1][2]) != 0) continue;
+			if (present[3].count(myArray[1][3]) != 0) continue;
+			for (int i = 0; i < 4; i++) {
+				present[i].insert(myArray[1][i]);
+			}
+
+			for (int c = 0; c < permutationsVector.size(); c++) {
+				myArray[2] = permutationsVector[c];
+				if (present[0].count(myArray[2][0]) != 0) continue;
+				if (present[1].count(myArray[2][1]) != 0) continue;
+				if (present[2].count(myArray[2][2]) != 0) continue;
+				if (present[3].count(myArray[2][3]) != 0) continue;
+				for (int i = 0; i < 4; i++) {
+					present[i].insert(myArray[2][i]);
+				}
+
+				for (int d = 0; d < permutationsVector.size(); d++) {
+					myArray[3] = permutationsVector[d];
+					/*for (int i = 0; i < 4; i++) {
+						ans[i] = new int[4];
+						for (int j = 0; j < 4; j++) {
+							ans[i][j] = myArray[i][j];
+							std::cout << ans[i][j] << " ";
+						}
+						std::cout << std::endl;
+					}*/
+					if (present[0].count(myArray[3][0]) != 0) continue;
+					if (present[1].count(myArray[3][1]) != 0) continue;
+					if (present[2].count(myArray[3][2]) != 0) continue;
+					if (present[3].count(myArray[3][3]) != 0) continue;
+					for (int i = 0; i < 4; i++) {
+						present[i].insert(myArray[3][i]);
+					}
+
+					/*int** ans = new int*[4];
+					for (int i = 0; i < 4; i++) {
+						ans[i] = new int[4];
+						for (int j = 0; j < 4; j++) {
+							ans[i][j] = myArray[i][j];
+							std::cout << ans[i][j] << " ";
+						}
+						std::cout << std::endl;
+					}
+					std::cout << std::endl;*/
+
+					if (checkAll(clues, myArray)) {
+						int** ans = new int*[4];
+						for (int i = 0; i < 4; i++) {
+							ans[i] = new int[4];
+							for (int j = 0; j < 4; j++) {
+								ans[i][j] = myArray[i][j];
+								std::cout << ans[i][j] << " ";
+							}
+							std::cout << std::endl;
+						}
+					}
+					for (int i = 0; i < 4; i++) {
+						present[i].erase(myArray[3][i]);
 					}
 				}
+				for (int i = 0; i < 4; i++) {
+					present[i].erase(myArray[2][i]);
+				}
 			}
+			for (int i = 0; i < 4; i++) {
+				present[i].erase(myArray[1][i]);
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			present[i].erase(myArray[0][i]);
 		}
 	}
 	std::cout << actions << std::endl;
